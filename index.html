@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#2fb24c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="动物兄弟打卡" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <title>动物兄弟打卡 · 小朋友端</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-wrap">
+    <!-- 顶部大横幅：左信息 + 右 logo（融入横幅背景） -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>🐾 动物兄弟探险打卡</h1>
+        <div class="balance-box">
+          <div>
+            <div class="balance-num"><span id="balance">0</span><span class="balance-ico">💎</span></div>
+            <div class="balance-label">我的能量石</div>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <img src="img/hero.png" alt="动物兄弟" />
+      </div>
+    </div>
+
+    <!-- 三栏切换器：按任务分类 -->
+    <div class="tabs">
+      <button class="tab active" data-tab="must">徽章大挑战</button>
+      <button class="tab" data-tab="learn">学习大冒险</button>
+      <button class="tab" data-tab="habit">生活好习惯</button>
+      <button class="tab" data-tab="exchange">能量石兑换</button>
+    </div>
+
+    <!-- 面板 1：徽章大挑战 -->
+    <div class="panel panel-kid" id="panel-must">
+      <div class="section section-must">
+        <div class="section-title">
+          <span class="tag tag-must">徽章大挑战</span>
+          <span class="must-progress" id="mustProgress"></span>
+        </div>
+        <div class="must-hint">全部完成即可解锁一张「动物力量卡」！</div>
+        <div class="task-grid" id="mustGrid"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">🃏 我的动物力量卡 <span class="card-count" id="cardCount"></span></div>
+        <div class="week-progress">
+          <div class="week-head">
+            <span class="week-title">📅 本周进度</span>
+            <span class="week-count" id="weekCount">本周已收集 0 张</span>
+          </div>
+          <div class="week-bar" id="weekBar"></div>
+        </div>
+        <div class="card-sub">点卡片翻面，看对应剧集「季·集」和英文标题 ✨</div>
+        <div class="card-filter hidden" id="cardFilter">
+          <button class="cf-tab on" data-f="collected">已收集</button>
+          <button class="cf-tab" data-f="uncollected">未收集</button>
+          <button class="cf-tab" data-f="all">全部</button>
+        </div>
+        <div class="card-shelf" id="cardShelf"></div>
+        <button class="card-expand" id="cardExpand">📖 翻开全部图鉴（138）▾</button>
+      </div>
+      <div class="foot-note">完成挑战就能解锁动物力量卡 💪</div>
+    </div>
+
+    <!-- 面板 2：学习大冒险 -->
+    <div class="panel panel-kid hidden" id="panel-learn">
+      <div class="section">
+        <div class="section-title"><span class="tag tag-learn">学习大冒险</span></div>
+        <div class="task-grid" id="learnGrid"></div>
+      </div>
+      <div class="foot-note">认真学习，积累能量石去兑换心仪的奖励吧！</div>
+    </div>
+
+    <!-- 面板 3：生活好习惯 -->
+    <div class="panel panel-kid hidden" id="panel-habit">
+      <div class="section">
+        <div class="section-title"><span class="tag tag-habit">生活好习惯</span></div>
+        <div class="task-grid" id="habitGrid"></div>
+      </div>
+      <div class="foot-note">自己的事情自己做，你越来越棒啦 🌟</div>
+    </div>
+
+    <!-- 面板 4：能量石兑换站 -->
+    <div class="panel panel-kid hidden" id="panel-exchange">
+      <div class="section">
+        <div class="section-title">🎁 能量石兑换站</div>
+        <div class="reward-grid" id="rewardGrid"></div>
+      </div>
+      <div class="foot-note">攒够能量石点兑换，去找爸爸妈妈领取奖励吧！</div>
+    </div>
+  </div>
+
+  <!-- 庆祝遮罩：徽章大挑战全部完成 -->
+  <div class="celebrate hidden" id="celebrate">
+    <div class="confetti" id="confetti"></div>
+    <div class="celebrate-card">
+      <div class="mascot">🐾</div>
+      <div class="ctitle">太棒了！</div>
+      <div class="cmsg" id="celebMsg"></div>
+      <div class="powercard-big" id="powerCardBig"></div>
+      <button class="btn-primary" id="celebClose">收下力量卡 💪</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
