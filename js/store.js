@@ -80,9 +80,22 @@ const Store = (() => {
   // 跨标签页同步：其他窗口修改 localStorage 后，重载内存并通知本页重绘
   window.addEventListener('storage', (e) => {
     if (e.key !== KEY) return;
-    try { state = JSON.parse(localStorage.getItem(KEY)); } catch (_) {}
-    window.dispatchEvent(new Event('app:state'));
+    reloadFromStorage();
   });
+
+  // 跨主屏 App 同步（小朋友端 / 家长端作为两个独立的 iOS WebClip 时，
+  // storage 事件不会触发，但切换 App 时页面会重新可见，借此补全同步）
+  function reloadFromStorage() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) state = JSON.parse(raw);
+    } catch (_) {}
+    window.dispatchEvent(new Event('app:state'));
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') reloadFromStorage();
+  });
+  window.addEventListener('pageshow', reloadFromStorage);
 
   /* 完成「每日必打卡」全部任务后，解锁一张力量卡（每日仅一次） */
   function tryUnlockPowerCard(today) {
