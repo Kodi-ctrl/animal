@@ -7,6 +7,9 @@ const today = () => {
 const TODAY = today();
 
 let state = { balance: 0, tasks: [], rewards: [], today: TODAY };
+/* 视图状态：kid（小朋友端）/ admin（家长端）；单 App 内共享同一份数据 */
+let currentView = 'kid';
+let adminReady = false;
 /* 卡册视图状态：默认折叠只显示已收集，展开后按状态筛选 */
 let cardExpanded = false;
 let cardFilter = 'collected';
@@ -277,9 +280,13 @@ function load() {
   maybeCelebrate();
   // 跨标签页 / 本页操作后的重绘统一由此接管
   window.addEventListener('app:state', () => {
-    state = Store.getState();
-    render();
-    maybeCelebrate();
+    if (currentView === 'kid') {
+      state = Store.getState();
+      render();
+      maybeCelebrate();
+    } else if (adminReady) {
+      Admin.render(); // 家长端在前台时，数据变化直接刷新家长视图
+    }
   });
 }
 
@@ -307,6 +314,46 @@ document.querySelectorAll('.cf-tab').forEach(b => b.addEventListener('click', ()
 }));
 
 load();
+
+/* ===== 视图切换：小朋友端 / 家长端（合并单 App，数据天然同步） ===== */
+function showAdmin() {
+  $('#kidView').classList.add('hidden');
+  $('#adminView').classList.remove('hidden');
+  currentView = 'admin';
+  if (!adminReady) { Admin.init(); adminReady = true; }
+  else Admin.render();
+}
+function showKid() {
+  $('#adminView').classList.add('hidden');
+  $('#kidView').classList.remove('hidden');
+  currentView = 'kid';
+  state = Store.getState();
+  render();
+  maybeCelebrate();
+}
+
+$('#parentEntry').addEventListener('click', () => {
+  $('#lockPwd').value = '';
+  $('#lockModal').classList.remove('hidden');
+  setTimeout(() => { const el = $('#lockPwd'); if (el) el.focus(); }, 50);
+});
+$('#lockCancel').addEventListener('click', () => $('#lockModal').classList.add('hidden'));
+$('#lockModal').addEventListener('click', (e) => { if (e.target === $('#lockModal')) $('#lockModal').classList.add('hidden'); });
+$('#lockOk').addEventListener('click', () => {
+  const pwd = $('#lockPwd').value;
+  const saved = localStorage.getItem('animal-checkin-pwd') || '1234';
+  if (pwd === saved) { $('#lockModal').classList.add('hidden'); showAdmin(); }
+  else toast('密码错误，请重试');
+});
+$('#lockPwd').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#lockOk').click(); });
+$('#backKidBtn').addEventListener('click', showKid);
+$('#aPwdSave').addEventListener('click', () => {
+  const v = $('#aPwdInput').value.trim();
+  if (!v) { toast('请输入新密码'); return; }
+  localStorage.setItem('animal-checkin-pwd', v);
+  $('#aPwdInput').value = '';
+  toast('家长密码已更新');
+});
 
 /* ===== PWA：注册 Service Worker + 「发现新版本」提示 ===== */
 (function registerSW() {
