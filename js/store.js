@@ -58,8 +58,19 @@ const Store = (() => {
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) state = JSON.parse(raw);
-      else { state = defaultState(); save(); }
+      if (raw) {
+        state = JSON.parse(raw);
+        // 自动补全：若任务 / 奖励为空（如家长端在独立书签中打开、与小朋友端存储隔离），
+        // 从默认配置恢复，便于家长直接查看与编辑，无需手动同步。其余运行态（能量石、记录）保持不变。
+        const cfg = window.APP_CONFIG || { DEFAULT_TASKS: [], DEFAULT_REWARDS: [] };
+        if (!Array.isArray(state.tasks) || state.tasks.length === 0) {
+          state.tasks = (cfg.DEFAULT_TASKS || []).map(t => ({ ...t, lastCompletedDate: null }));
+        }
+        if (!Array.isArray(state.rewards) || state.rewards.length === 0) {
+          state.rewards = (cfg.DEFAULT_REWARDS || []).map(r => ({ ...r }));
+        }
+        save();
+      } else { state = defaultState(); save(); }
     } catch (e) {
       console.error('[store] load error:', e);
       state = defaultState();
@@ -245,28 +256,6 @@ const Store = (() => {
     save();
   }
 
-  /* 家长端：导出当前全量数据（用于跨设备 / 跨 WebClip 同步到另一端的家长视图） */
-  function exportData() {
-    return JSON.parse(JSON.stringify({
-      balance: state.balance,
-      tasks: state.tasks,
-      rewards: state.rewards,
-      completions: state.completions,
-      redemptions: state.redemptions,
-      unlockedCards: state.unlockedCards,
-      mustMilestone: state.mustMilestone
-    }));
-  }
-
-  /* 家长端：把「孩子端」导出的任务清单与奖励兑换同步进来（覆盖本端 tasks/rewards，其余不变） */
-  function importTasksRewards(data) {
-    if (!data || typeof data !== 'object') throw new Error('数据格式不正确');
-    if (!Array.isArray(data.tasks) || !Array.isArray(data.rewards)) throw new Error('缺少任务或奖励数据');
-    state.tasks = data.tasks.map(t => ({ ...t, lastCompletedDate: t.lastCompletedDate || null }));
-    state.rewards = data.rewards.map(r => ({ ...r }));
-    save();
-  }
-
   /* 视图：小朋友端（仅启用项 + 力量卡全集 + 解锁记录） */
   function getState() {
     return {
@@ -295,7 +284,6 @@ const Store = (() => {
     ICONS, load, save, completeTask, undoTask, redeemReward, undoRedemption,
     addTask, updateTask, deleteTask, addReward, updateReward, deleteReward,
     resetAll,
-    exportData, importTasksRewards,
     getState, getAdminState
   };
 })();
