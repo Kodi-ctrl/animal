@@ -393,14 +393,6 @@ const Admin = (() => {
       toast('已清零，所有记录与设置已恢复初始状态');
     });
 
-    // 数据同步：导出 / 导入
-    $('#aExportBtn').addEventListener('click', openExportModal);
-    $('#aImportBtn').addEventListener('click', openImportModal);
-    $('#aExportCancel').addEventListener('click', () => $('#aExportModal').classList.add('hidden'));
-    $('#aExportCopy').addEventListener('click', copyExport);
-    $('#aImportCancel').addEventListener('click', () => $('#aImportModal').classList.add('hidden'));
-    $('#aImportOk').addEventListener('click', doImport);
-
     // 点击遮罩关闭家长端弹窗
     $$('#adminView .modal-mask').forEach(m => m.addEventListener('click', (e) => { if (e.target === m) m.classList.add('hidden'); }));
   }
@@ -419,49 +411,8 @@ const Admin = (() => {
     $('#aRewardModal').classList.remove('hidden');
   }
 
-  /* ===== 数据同步：导出 / 导入（跨设备 / 跨 WebClip 同步孩子端任务与奖励） ===== */
-  function openExportModal() {
-    try {
-      const data = Store.exportData();
-      const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-      $('#aExportText').value = code;
-      $('#aExportModal').classList.remove('hidden');
-    } catch (e) { toast('导出失败'); }
-  }
-  function copyExport() {
-    const ta = $('#aExportText');
-    const code = ta.value;
-    if (!code) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(code).then(() => toast('已复制，去空白设备粘贴吧')).catch(() => fallbackCopy(ta));
-    } else fallbackCopy(ta);
-  }
-  function fallbackCopy(ta) {
-    ta.removeAttribute('readonly');
-    ta.select();
-    ta.setSelectionRange(0, ta.value.length);
-    try { document.execCommand('copy'); toast('已复制'); } catch (e) { toast('请长按手动复制'); }
-    ta.setAttribute('readonly', '');
-    ta.blur();
-  }
-  function openImportModal() {
-    $('#aImportText').value = '';
-    $('#aImportModal').classList.remove('hidden');
-  }
-  async function doImport() {
-    const code = $('#aImportText').value.trim();
-    if (!code) { toast('请先粘贴孩子端导出的代码'); return; }
-    try {
-      const json = decodeURIComponent(escape(atob(code)));
-      const data = JSON.parse(json);
-      await Store.importTasksRewards(data);
-      state = Store.getAdminState();
-      renderTasks();
-      renderRewards();
-      $('#aImportModal').classList.add('hidden');
-      toast('已同步孩子端的任务与奖励 🎉');
-    } catch (e) { toast('导入失败：代码无效或格式错误'); }
-  }
+  /* ===== 家长端进入时若任务 / 奖励为空，会自动从默认配置恢复（见 store.js load），
+       因此这里无需导出 / 导入逻辑 ===== */
 
   return { init, render };
 })();
