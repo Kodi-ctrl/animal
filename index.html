@@ -180,16 +180,6 @@
         </div>
         <div class="reset-hint">默认密码 1234，可在此修改为自定义密码。</div>
       </div>
-
-      <!-- 数据同步：跨设备 / 跨 WebClip 把「孩子端」任务与奖励同步到本端家长视图 -->
-      <div class="reset-zone sync-zone">
-        <div class="sync-title">🔗 数据同步</div>
-        <div class="sync-btns">
-          <button class="btn-ghost" id="aExportBtn" type="button">📤 导出当前数据</button>
-          <button class="btn-ghost" id="aImportBtn" type="button">📥 从孩子端导入</button>
-        </div>
-        <div class="reset-hint">若家长端任务 / 奖励为空：先在「有数据的那台设备」打开家长入口 → 导出；再在「空白的那台」打开家长入口 → 导入即可同步。</div>
-      </div>
     </div>
 
     <!-- 任务编辑弹窗 -->
@@ -257,32 +247,6 @@
         <div class="modal-actions">
           <button class="btn-ghost" id="aRewardCancel" style="flex:1">取消</button>
           <button class="btn-primary" id="aRewardSave" style="flex:2">保存</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 导出数据弹窗 -->
-    <div class="modal-mask hidden" id="aExportModal">
-      <div class="modal">
-        <h3>📤 导出当前数据</h3>
-        <div class="reset-hint">把下面这串代码复制，发给「空白设备」的家长端，粘贴到「从孩子端导入」即可同步任务与奖励。</div>
-        <textarea class="code-area" id="aExportText" readonly></textarea>
-        <div class="modal-actions">
-          <button class="btn-ghost" id="aExportCancel" style="flex:1">关闭</button>
-          <button class="btn-primary" id="aExportCopy" style="flex:2">复制代码</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 导入数据弹窗 -->
-    <div class="modal-mask hidden" id="aImportModal">
-      <div class="modal">
-        <h3>📥 从孩子端导入</h3>
-        <div class="reset-hint">粘贴「孩子端」导出的代码，导入后本端家长视图的任务清单与奖励兑换将同步为孩子端的内容。</div>
-        <textarea class="code-area" id="aImportText" placeholder="在此粘贴导出的代码"></textarea>
-        <div class="modal-actions">
-          <button class="btn-ghost" id="aImportCancel" style="flex:1">取消</button>
-          <button class="btn-primary" id="aImportOk" style="flex:2">导入同步</button>
         </div>
       </div>
     </div>
