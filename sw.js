@@ -4,7 +4,7 @@
  * - 静态资源（含卡图）：stale-while-revalidate（先用缓存，后台更新）
  * - 版本更新：改下方 CACHE 版本号即可触发；新版本等待用户点击「点此更新」后生效
  */
-const CACHE = 'animal-checkin-v5';
+const CACHE = 'animal-checkin-v6';
 const CORE = [
   'index.html',
   'css/style.css',
